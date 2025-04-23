@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive A1 Dutch Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Apply Inter font globally */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Indigo to Purple */
+            color: #374151; /* Gray-700 */
+            min-height: 100vh;
+        }
+        /* Style for the word cards */
+        .word-card {
+            background-color: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(5px);
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+            height: 100%;
+        }
+        .word-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        /* Container for text content on the left */
+        .text-content {
+            flex-grow: 1;
+            padding: 1rem; /* p-4 */
+            display: flex;
+            flex-direction: column;
+        }
+        /* Container for the emoji visual on the right */
+        .visual-container { /* Renamed from image-container */
+            flex-shrink: 0;
+            width: 100px; /* Slightly smaller width for emoji */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f9ff; /* Light blue background */
+        }
+        /* Style for the emoji */
+        .card-emoji {
+            font-size: 3.5rem; /* Large emoji */
+            line-height: 1;
+        }
+
+        .word-title-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.125rem; /* mb-0.5 */
+        }
+        .word-title {
+            font-size: 1.75rem; /* text-2xl */
+            font-weight: 600;
+            color: #1e3a8a;
+            margin-bottom: 0;
+        }
+        .word-definition {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280;
+            margin-bottom: 0.75rem; /* mb-3 */
+            font-style: italic;
+            line-height: 1.3;
+        }
+        .example-sentence-container {
+             margin-top: auto;
+        }
+        .example-sentence-dutch {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem; /* text-sm */
+            color: #4b5563;
+            line-height: 1.4;
+        }
+        .example-translation {
+            font-size: 0.8rem; /* text-xs */
+            color: #9ca3af;
+            margin-top: 0.125rem; /* mt-0.5 */
+        }
+        .section-title {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem; /* mb-4 */
+            text-align: left;
+            padding-top: 1.5rem; /* pt-6 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 0.5rem; /* pb-2 */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        /* Speaker Icon Style */
+        .speaker-icon {
+            cursor: pointer;
+            display: inline-block;
+            width: 1.2em;
+            height: 1.2em;
+            fill: #4b5563;
+            transition: fill 0.2s ease;
+        }
+        .speaker-icon:hover {
+            fill: #1d4ed8;
+        }
+        /* Regenerate Button Style */
+        .regenerate-button {
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            background-color: #ffffff;
+            color: #6366f1;
+            font-weight: 600;
+            border-radius: 0.5rem; /* rounded-lg */
+            border: 1px solid transparent;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        .regenerate-button:hover {
+            background-color: #f0f0ff;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        .regenerate-button:active {
+             transform: translateY(0px);
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) { /* Small screens */
+             .word-card {
+                flex-direction: column; /* Stack vertically */
+             }
+             .visual-container { /* Emoji container */
+                width: 100%; /* Full width */
+                height: 80px; /* Fixed height */
+                padding: 0.5rem 0; /* Add some padding */
+             }
+             .card-emoji {
+                 font-size: 2.5rem; /* Slightly smaller emoji */
+             }
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto px-4 py-6">
+
+        <h1 class="text-3xl font-bold text-center text-white mb-6 text-shadow-md">Interactive A1 Dutch Vocabulary</h1>
+
+        <button id="regenerate-btn" class="regenerate-button">Generate New Words</button>
+
+        <section class="mb-6">
+            <h2 class="section-title">Verbs (Werkwoorden)</h2>
+            <div id="verbs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="section-title">Adjectives (Bijvoeglijke naamwoorden)</h2>
+             <div id="adjectives-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Nouns (Zelfstandige naamwoorden)</h2>
+             <div id="nouns-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 </div>
+        </section>
+
+    </div>
+
+    <script>
+        // --- Data ---
+        const wordsData = {
+            verbs: [
+                { word: "Hebben", definition: "To have", example_nl: "Ik heb een fiets.", example_en: "I have a bike.", emoji: "🤝" },
+                { word: "Zijn", definition: "To be", example_nl: "Wij zijn studenten.", example_en: "We are students.", emoji: "🧑‍🎓" },
+                { word: "Gaan", definition: "To go", example_nl: "Zij gaat naar school.", example_en: "She goes to school.", emoji: "🚶" },
+                { word: "Wonen", definition: "To live/reside", example_nl: "Hij woont in Amsterdam.", example_en: "He lives in Amsterdam.", emoji: "🏠" },
+                { word: "Werken", definition: "To work", example_nl: "Ik werk in een kantoor.", example_en: "I work in an office.", emoji: "🧑‍💻" },
+                { word: "Drinken", definition: "To drink", example_nl: "Wij drinken koffie.", example_en: "We drink coffee.", emoji: "☕" },
+                { word: "Eten", definition: "To eat", example_nl: "Zij eet een appel.", example_en: "She eats an apple.", emoji: "🍎" },
+                { word: "Spreken", definition: "To speak", example_nl: "Spreekt u Engels?", example_en: "Do you speak English?", emoji: "💬" },
+            ],
+            adjectives: [
+                { word: "Groot", definition: "Big / Large / Tall", example_nl: "Het huis is groot.", example_en: "The house is big.", emoji: "📏" },
+                { word: "Nieuw", definition: "New", example_nl: "Dit is mijn nieuwe auto.", example_en: "This is my new car.", emoji: "✨" },
+                { word: "Klein", definition: "Small / Little", example_nl: "De kat is klein.", example_en: "The cat is small.", emoji: "🐈" },
+                { word: "Mooi", definition: "Beautiful / Nice", example_nl: "Het weer is mooi.", example_en: "The weather is nice.", emoji: "☀️" },
+                { word: "Goed", definition: "Good / Well", example_nl: "Dat is een goed idee.", example_en: "That is a good idea.", emoji: "👍" },
+                { word: "Koud", definition: "Cold", example_nl: "Het water is koud.", example_en: "The water is cold.", emoji: "🧊" },
+                { word: "Warm", definition: "Warm", example_nl: "De thee is warm.", example_en: "The tea is warm.", emoji: "🍵" },
+                { word: "Duur", definition: "Expensive", example_nl: "Dit horloge is duur.", example_en: "This watch is expensive.", emoji: "💰" },
+            ],
+            nouns: [
+                { word: "Het Huis", definition: "The House", example_nl: "Waar is het huis?", example_en: "Where is the house?", emoji: "🏠" },
+                { word: "De Tafel", definition: "The Table", example_nl: "Het boek ligt op de tafel.", example_en: "The book is on the table.", emoji: "🪵" },
+                { word: "De Fiets", definition: "The Bicycle", example_nl: "Mijn fiets is rood.", example_en: "My bicycle is red.", emoji: "🚲" },
+                { word: "Het Boek", definition: "The Book", example_nl: "Ik lees een boek.", example_en: "I read a book.", emoji: "📖" },
+                { word: "De Stoel", definition: "The Chair", example_nl: "Zit op de stoel.", example_en: "Sit on the chair.", emoji: "🪑" },
+                { word: "De Man", definition: "The Man", example_nl: "De man loopt.", example_en: "The man walks.", emoji: "👨" },
+                { word: "De Vrouw", definition: "The Woman", example_nl: "De vrouw lacht.", example_en: "The woman laughs.", emoji: "👩" },
+                { word: "Het Water", definition: "The Water", example_nl: "Ik drink water.", example_en: "I drink water.", emoji: "💧" },
+            ]
+        };
+
+        // --- Speaker Icon SVG ---
+        const speakerIconSvg = `
+            <svg class="speaker-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 0 0-1.071 1.053 8.25 8.25 0 0 1 0 15.32 1.5 1.5 0 1 1-1.651 1.897 11.25 11.25 0 0 0 0-19.113.75.75 0 0 0 .62-1.135ZM17.037 6.26a.75.75 0 0 0-1.071 1.053 4.5 4.5 0 0 1 0 8.373 1.5 1.5 0 0 1-1.65 1.897 7.5 7.5 0 0 0 0-12.167.75.75 0 0 0 .619-1.158Z" clip-rule="evenodd" />
+              <path d="M11.25 4.5A.75.75 0 0 0 10.5 3H7.5a.75.75 0 0 0-.75.75v16.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V4.5Z" />
+            </svg>`;
+
+        // --- DOM Elements ---
+        const verbsGrid = document.getElementById('verbs-grid');
+        const adjectivesGrid = document.getElementById('adjectives-grid');
+        const nounsGrid = document.getElementById('nouns-grid');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+
+        // --- Pre-fetch voices (helps ensure the list is populated) ---
+        // Note: This is still not foolproof due to browser differences.
+        try {
+            window.speechSynthesis.getVoices();
+        } catch (e) {
+            console.error("Error pre-fetching voices:", e);
+        }
+
+
+        // --- Text-to-Speech Function ---
+        function speakText(text, lang = 'nl-NL') {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any previous speech
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang; // Set desired language
+                utterance.rate = 0.9; // Adjust speech rate
+
+                // --- Attempt to find and set a specific Dutch voice ---
+                try {
+                    const voices = window.speechSynthesis.getVoices();
+                    console.log("Available voices:", voices); // Log available voices for debugging
+
+                    // Find the first available Dutch voice
+                    const dutchVoice = voices.find(voice => voice.lang === 'nl-NL');
+
+                    if (dutchVoice) {
+                        utterance.voice = dutchVoice; // Explicitly set the voice
+                        console.log("Using Dutch voice:", dutchVoice.name);
+                    } else {
+                        console.warn(`No Dutch (nl-NL) voice found. Using browser default for language '${lang}'.`);
+                        // If no specific voice found, the browser will try to use one based on utterance.lang
+                    }
+                } catch (e) {
+                     console.error("Error getting or setting voices:", e);
+                     // Proceed without setting a specific voice, relying on utterance.lang
+                }
+                // --- End of voice selection attempt ---
+
+                window.speechSynthesis.speak(utterance); // Speak the utterance
+
+            } else {
+                console.warn("Text-to-Speech not supported in this browser.");
+                alert("Sorry, your browser doesn't support the speech feature.");
+            }
+        }
+
+        // --- Card Generation Function ---
+        function generateCards() {
+            verbsGrid.innerHTML = '';
+            adjectivesGrid.innerHTML = '';
+            nounsGrid.innerHTML = '';
+
+            const getRandomItems = (arr, num) => {
+                const shuffled = [...arr].sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, num);
+            };
+
+            const selectedVerbs = getRandomItems(wordsData.verbs, 3);
+            const selectedAdjectives = getRandomItems(wordsData.adjectives, 3);
+            const selectedNouns = getRandomItems(wordsData.nouns, 3);
+
+            // Helper function to create card HTML with Emoji visual
+            const createCardHtml = (item) => {
+                return `
+                    <div class="word-card">
+                        <div class="text-content">
+                            <div class="word-title-container">
+                                <h3 class="word-title">${item.word}</h3>
+                                <span class="speaker-icon-wrapper" data-text="${item.word}">
+                                    ${speakerIconSvg}
+                                </span>
+                            </div>
+                            <p class="word-definition">${item.definition}</p>
+                            <div class="example-sentence-container">
+                                <p class="example-sentence-dutch">
+                                    <span class="flex-grow">${item.example_nl}</span>
+                                    <span class="speaker-icon-wrapper" data-text="${item.example_nl}">
+                                        ${speakerIconSvg}
+                                    </span>
+                                </p>
+                                <p class="example-translation">${item.example_en}</p>
+                            </div>
+                        </div>
+                        <div class="visual-container">
+                             <span class="card-emoji" role="img" aria-label="${item.definition}">${item.emoji || '❓'}</span>
+                        </div>
+                    </div>`;
+            };
+
+            // Populate grids
+            selectedVerbs.forEach(item => verbsGrid.innerHTML += createCardHtml(item));
+            selectedAdjectives.forEach(item => adjectivesGrid.innerHTML += createCardHtml(item));
+            selectedNouns.forEach(item => nounsGrid.innerHTML += createCardHtml(item));
+        }
+
+        // --- Event Listeners ---
+        regenerateBtn.addEventListener('click', generateCards);
+
+        function handleSpeakerClick(event) {
+            const wrapper = event.target.closest('.speaker-icon-wrapper');
+            if (wrapper && wrapper.dataset.text) {
+                speakText(wrapper.dataset.text); // Default lang 'nl-NL' is used
+            }
+        }
+
+        document.getElementById('verbs-grid').addEventListener('click', handleSpeakerClick);
+        document.getElementById('adjectives-grid').addEventListener('click', handleSpeakerClick);
+        document.getElementById('nouns-grid').addEventListener('click', handleSpeakerClick);
+
+        // --- Initial Load ---
+        // We need voices to be loaded before we can select one.
+        // The 'voiceschanged' event is the proper way, but can be tricky.
+        // We'll call generateCards on DOMContentLoaded and hope voices are ready
+        // when speakText is called, or rely on the lang property.
+        document.addEventListener('DOMContentLoaded', generateCards);
+        // Attempt to ensure voices are loaded when speech is first triggered
+        window.speechSynthesis.onvoiceschanged = () => {
+            console.log("Voices loaded/changed.");
+            // Optionally re-fetch voices here if needed elsewhere
+            window.speechSynthesis.getVoices();
+        };
+
+
+    </script>
+
+</body>
+</html>
